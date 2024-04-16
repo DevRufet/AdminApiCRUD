@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .container {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <button class="homebtn"><a href="" style="text-decoration: none;">Go HomePage</a></button>
+    <button class="useraddbtn"><a href="adminAdd.html" style="text-decoration: none;">Add New User</a></button>
+    <div class="container"></div>
+    <script>
+      const umumi = document.querySelector(".container");
+      async function getProducts() {
+        const response = await fetch("http://localhost:3000/Admins");
+        const data = await response.json();
+        return data;
+      }
+      async function generateUi() {
+        let arr = await getProducts();
+        arr.forEach((element) => {
+          const div = document.createElement("div");
+          div.style.maxWidth = "1000px";
+          div.style.minHeight = "250px";
+          div.style.border = "1px solid black";
+          div.style.display = "flex";
+          div.style.gap = "100px";
+          div.style.justifyContent = "center";
+          div.style.alignItems = "center";
+
+          const img = document.createElement("img");
+          const updateitem = document.createElement("button");
+          const links=document.createElement("a")
+          const deleteitem = document.createElement("button");
+          links.textContent = "Update";
+          deleteitem.textContent = "Delete";
+          updateitem.appendChild(links)
+          updateitem.addEventListener("click",function(){
+            links.href=`adminUpdate.html?id=${element.id}`
+          })
+          deleteitem.addEventListener("click", function () {
+            async function deleteProducts(id) {
+              const response = await fetch("http://localhost:3000/Admins/"+id, {
+                method: "DELETE",
+              });
+              const data = await response.json();
+              return data;
+            }
+            deleteProducts(element.id)
+          });
+          img.style.width = "25%";
+          img.style.height = "25%";
+          const name = document.createElement("h5");
+          const position = document.createElement("p");
+          umumi.appendChild(div);
+          div.append(img, name, position, updateitem, deleteitem);
+          img.setAttribute("src", element.image);
+          name.textContent = element.name;
+          position.textContent = element.position;
+        });
+      }
+      generateUi();
+    </script>
+  </body>
+</html>
